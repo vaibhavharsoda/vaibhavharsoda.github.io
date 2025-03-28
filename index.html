@@ -1,1 +1,200 @@
-<h2>hello</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Selection Spinner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ff6b6b 0deg 16.36deg,
+                #4ecdc4 16.36deg 32.72deg,
+                #45b7d1 32.72deg 49.08deg,
+                #96c93d 49.08deg 65.44deg,
+                #f7dc6f 65.44deg 81.80deg,
+                #ff9f43 81.80deg 98.16deg,
+                #eb4d4b 98.16deg 114.52deg,
+                #6ab04c 114.52deg 130.88deg,
+                #e056fd 130.88deg 147.24deg,
+                #686de0 147.24deg 163.60deg,
+                #30336b 163.60deg 180deg,
+                #95afc0 180deg 196.36deg,
+                #ff6b6b 196.36deg 212.72deg,
+                #4ecdc4 212.72deg 229.08deg,
+                #45b7d1 229.08deg 245.44deg,
+                #96c93d 245.44deg 261.80deg,
+                #f7dc6f 261.80deg 278.16deg,
+                #ff9f43 278.16deg 294.52deg,
+                #eb4d4b 294.52deg 310.88deg,
+                #6ab04c 310.88deg 327.24deg,
+                #e056fd 327.24deg 343.60deg,
+                #686de0 343.60deg 360deg
+            );
+            position: relative;
+            transition: transform 4s ease-out;
+            border: 2px solid #333;
+        }
+
+        .spinner-arrow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #333;
+        }
+
+        .spin-button, .reset-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .spin-button:hover, .reset-button:hover {
+            background-color: #45a049;
+        }
+
+        .reset-button {
+            background-color: #f44336;
+        }
+
+        .reset-button:hover {
+            background-color: #da190b;
+        }
+
+        .selected-players {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .player-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .player-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .count {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Player Selection Spinner</h1>
+        <div class="spinner-container">
+            <div class="spinner" id="spinner">
+                <div class="spinner-arrow"></div>
+            </div>
+        </div>
+        <button class="spin-button" id="spinButton">Spin</button>
+        <button class="reset-button" id="resetButton">Reset</button>
+        <div class="selected-players" id="selectedPlayers"></div>
+        <div class="count" id="playerCount">Selected: 0/11 out of 22 players</div>
+    </div>
+
+    <script>
+        const players = [
+            'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11',
+            'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11'
+        ];
+        
+        let selectedPlayers = new Set();
+        const spinner = document.getElementById('spinner');
+        const spinButton = document.getElementById('spinButton');
+        const resetButton = document.getElementById('resetButton');
+        const selectedPlayersDiv = document.getElementById('selectedPlayers');
+        const playerCount = document.getElementById('playerCount');
+
+        function updateDisplay() {
+            selectedPlayersDiv.innerHTML = '<h3>Selected Players:</h3><ul class="player-list">' + 
+                Array.from(selectedPlayers).map(player => `<li>${player}</li>`).join('') + 
+                '</ul>';
+            playerCount.textContent = `Selected: ${selectedPlayers.size}/11 out of 22 players`;
+            
+            if (selectedPlayers.size >= 11) {
+                spinButton.disabled = true;
+                spinButton.style.backgroundColor = '#cccccc';
+            }
+        }
+
+        spinButton.addEventListener('click', () => {
+            if (selectedPlayers.size >= 11) return;
+
+            spinButton.disabled = true;
+            const spins = 5 + Math.random() * 5; // Random spins between 5 and 10
+            const randomDegree = Math.floor(Math.random() * 360);
+            const totalRotation = 360 * spins + randomDegree;
+            
+            spinner.style.transform = `rotate(${totalRotation}deg)`;
+
+            setTimeout(() => {
+                const sectionAngle = 360 / 22; // 22 sections
+                const finalAngle = totalRotation % 360;
+                const selectedIndex = Math.floor(finalAngle / sectionAngle);
+                
+                const selectedPlayer = players[selectedIndex];
+                if (!selectedPlayers.has(selectedPlayer)) {
+                    selectedPlayers.add(selectedPlayer);
+                }
+                
+                updateDisplay();
+                spinButton.disabled = false;
+            }, 4000); // Match the CSS transition duration
+        });
+
+        resetButton.addEventListener('click', () => {
+            selectedPlayers.clear();
+            spinner.style.transform = 'rotate(0deg)';
+            spinButton.disabled = false;
+            spinButton.style.backgroundColor = '#4CAF50';
+            updateDisplay();
+        });
+
+        // Initial display
+        updateDisplay();
+    </script>
+</body>
+</html>
