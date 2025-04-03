@@ -5,26 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Selection Spinner</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             min-height: 100vh;
-            margin: 0;
             background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            padding: 10px;
         }
 
         .container {
             text-align: center;
-            margin-top: 50px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            margin-bottom: 1rem;
         }
 
         .spinner-container {
             position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 20px auto;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 350px;
+            margin: 0 auto 1rem;
         }
 
         .spinner {
@@ -32,92 +44,140 @@
             height: 100%;
             border-radius: 50%;
             background: conic-gradient(
-                #ff6b6b 0deg 16.36deg,
-                #4ecdc4 16.36deg 32.72deg,
-                #45b7d1 32.72deg 49.08deg,
-                #96c93d 49.08deg 65.44deg,
-                #f7dc6f 65.44deg 81.80deg,
-                #ff9f43 81.80deg 98.16deg,
-                #eb4d4b 98.16deg 114.52deg,
-                #6ab04c 114.52deg 130.88deg,
-                #e056fd 130.88deg 147.24deg,
-                #686de0 147.24deg 163.60deg,
-                #30336b 163.60deg 180deg,
-                #95afc0 180deg 196.36deg,
-                #ff6b6b 196.36deg 212.72deg,
-                #4ecdc4 212.72deg 229.08deg,
-                #45b7d1 229.08deg 245.44deg,
-                #96c93d 245.44deg 261.80deg,
-                #f7dc6f 261.80deg 278.16deg,
-                #ff9f43 278.16deg 294.52deg,
-                #eb4d4b 294.52deg 310.88deg,
-                #6ab04c 310.88deg 327.24deg,
-                #e056fd 327.24deg 343.60deg,
-                #686de0 343.60deg 360deg
+                from 0deg,
+                #ff6b6b 0% 4.55%,
+                #4ecdc4 4.55% 9.1%,
+                #45b7d1 9.1% 13.65%,
+                #96c93d 13.65% 18.2%,
+                #f7dc6f 18.2% 22.75%,
+                #ff9f43 22.75% 27.3%,
+                #eb4d4b 27.3% 31.85%,
+                #6ab04c 31.85% 36.4%,
+                #e056fd 36.4% 40.95%,
+                #686de0 40.95% 45.5%,
+                #30336b 45.5% 50%,
+                #95afc0 50% 54.55%,
+                #ff6b6b 54.55% 59.1%,
+                #4ecdc4 59.1% 63.65%,
+                #45b7d1 63.65% 68.2%,
+                #96c93d 68.2% 72.75%,
+                #f7dc6f 72.75% 77.3%,
+                #ff9f43 77.3% 81.85%,
+                #eb4d4b 81.85% 86.4%,
+                #6ab04c 86.4% 90.95%,
+                #e056fd 90.95% 95.5%,
+                #686de0 95.5% 100%
             );
             position: relative;
-            transition: transform 4s ease-out;
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            border: 4px solid #333;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .spinner-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25%;
+            aspect-ratio: 1 / 1;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: bold;
             border: 2px solid #333;
         }
 
         .spinner-arrow {
             position: absolute;
-            top: -20px;
+            top: -5%;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 30px solid #333;
+            border-left: clamp(10px, 3vw, 20px) solid transparent;
+            border-right: clamp(10px, 3vw, 20px) solid transparent;
+            border-bottom: clamp(20px, 6vw, 35px) solid #333;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 1rem 0;
         }
 
         .spin-button, .reset-button {
             padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            border-radius: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex: 1;
+            max-width: 150px;
+            touch-action: manipulation;
         }
 
-        .spin-button:hover, .reset-button:hover {
+        .spin-button:hover:not(:disabled), .reset-button:hover:not(:disabled) {
             background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .spin-button:disabled, .reset-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .reset-button {
             background-color: #f44336;
         }
 
-        .reset-button:hover {
+        .reset-button:hover:not(:disabled) {
             background-color: #da190b;
         }
 
         .selected-players {
-            margin-top: 20px;
-            padding: 20px;
+            margin-top: 1rem;
+            padding: 1rem;
             background-color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
         }
 
         .player-list {
             list-style: none;
             padding: 0;
+            max-height: 40vh;
+            overflow-y: auto;
         }
 
         .player-list li {
-            padding: 5px 0;
+            padding: 0.5rem 0;
             border-bottom: 1px solid #eee;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
 
-        .count {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
+        @media (max-width: 400px) {
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .spin-button, .reset-button {
+                width: 100%;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -127,12 +187,14 @@
         <div class="spinner-container">
             <div class="spinner" id="spinner">
                 <div class="spinner-arrow"></div>
+                <div class="spinner-center" id="spinnerCount">0/11</div>
             </div>
         </div>
-        <button class="spin-button" id="spinButton">Spin</button>
-        <button class="reset-button" id="resetButton">Reset</button>
+        <div class="button-container">
+            <button class="spin-button" id="spinButton">Spin</button>
+            <button class="reset-button" id="resetButton">Reset</button>
+        </div>
         <div class="selected-players" id="selectedPlayers"></div>
-        <div class="count" id="playerCount">Selected: 0/11 out of 22 players</div>
     </div>
 
     <script>
@@ -142,58 +204,75 @@
         ];
         
         let selectedPlayers = new Set();
+        let currentRotation = 0;
+        let isSpinning = false;
+        
         const spinner = document.getElementById('spinner');
+        const spinnerCount = document.getElementById('spinnerCount');
         const spinButton = document.getElementById('spinButton');
         const resetButton = document.getElementById('resetButton');
         const selectedPlayersDiv = document.getElementById('selectedPlayers');
-        const playerCount = document.getElementById('playerCount');
 
         function updateDisplay() {
             selectedPlayersDiv.innerHTML = '<h3>Selected Players:</h3><ul class="player-list">' + 
                 Array.from(selectedPlayers).map(player => `<li>${player}</li>`).join('') + 
                 '</ul>';
-            playerCount.textContent = `Selected: ${selectedPlayers.size}/11 out of 22 players`;
+            spinnerCount.textContent = `${selectedPlayers.size}/11`;
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            spinButton.disabled = isSpinning || selectedPlayers.size >= 11;
+            resetButton.disabled = isSpinning;
+        }
+
+        function spinWheel(direction = 1) {
+            if (isSpinning || (direction === 1 && selectedPlayers.size >= 11)) return;
             
-            if (selectedPlayers.size >= 11) {
-                spinButton.disabled = true;
-                spinButton.style.backgroundColor = '#cccccc';
+            isSpinning = true;
+            updateButtonStates();
+
+            const spins = 3 + Math.random() * 3;
+            const sectionAngle = 360 / 22;
+            let targetAngle;
+
+            if (direction === 1) { // Spin clockwise
+                const availablePlayers = players.filter(p => !selectedPlayers.has(p));
+                if (availablePlayers.length === 0) {
+                    isSpinning = false;
+                    updateButtonStates();
+                    return;
+                }
+                const randomPlayer = availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+                const targetIndex = players.indexOf(randomPlayer);
+                targetAngle = targetIndex * sectionAngle;
+                currentRotation += (360 * spins) + (targetAngle - (currentRotation % 360));
+                
+                spinner.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                spinner.style.transform = `rotate(${currentRotation}deg)`;
+                
+                setTimeout(() => {
+                    selectedPlayers.add(randomPlayer);
+                    isSpinning = false;
+                    updateDisplay();
+                }, 3000);
+            } else { // Reset counterclockwise
+                currentRotation -= (360 * 3);
+                spinner.style.transition = 'transform 2s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                spinner.style.transform = `rotate(${currentRotation}deg)`;
+                
+                setTimeout(() => {
+                    selectedPlayers.clear();
+                    isSpinning = false;
+                    updateDisplay();
+                }, 2000);
             }
         }
 
-        spinButton.addEventListener('click', () => {
-            if (selectedPlayers.size >= 11) return;
+        spinButton.addEventListener('click', () => spinWheel(1));
+        resetButton.addEventListener('click', () => spinWheel(-1));
 
-            spinButton.disabled = true;
-            const spins = 5 + Math.random() * 5; // Random spins between 5 and 10
-            const randomDegree = Math.floor(Math.random() * 360);
-            const totalRotation = 360 * spins + randomDegree;
-            
-            spinner.style.transform = `rotate(${totalRotation}deg)`;
-
-            setTimeout(() => {
-                const sectionAngle = 360 / 22; // 22 sections
-                const finalAngle = totalRotation % 360;
-                const selectedIndex = Math.floor(finalAngle / sectionAngle);
-                
-                const selectedPlayer = players[selectedIndex];
-                if (!selectedPlayers.has(selectedPlayer)) {
-                    selectedPlayers.add(selectedPlayer);
-                }
-                
-                updateDisplay();
-                spinButton.disabled = false;
-            }, 4000); // Match the CSS transition duration
-        });
-
-        resetButton.addEventListener('click', () => {
-            selectedPlayers.clear();
-            spinner.style.transform = 'rotate(0deg)';
-            spinButton.disabled = false;
-            spinButton.style.backgroundColor = '#4CAF50';
-            updateDisplay();
-        });
-
-        // Initial display
+        // Initial setup
         updateDisplay();
     </script>
 </body>
